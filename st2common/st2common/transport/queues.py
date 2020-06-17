@@ -54,7 +54,8 @@ __all__ = [
     'STREAM_LIVEACTION_WORK_QUEUE',
 
     'WORKFLOW_EXECUTION_WORK_QUEUE',
-    'WORKFLOW_EXECUTION_RESUME_QUEUE'
+    'WORKFLOW_EXECUTION_RESUME_QUEUE',
+    'EXECUTION_BUILDER_RESUME_QUEUE'
 ]
 
 
@@ -150,3 +151,7 @@ WORKFLOW_EXECUTION_RESUME_QUEUE = workflow.get_status_management_queue(
 WORKFLOW_ACTION_EXECUTION_UPDATE_QUEUE = execution.get_queue(
     'st2.workflow.action.update',
     routing_key=publishers.UPDATE_RK)
+
+EXECUTION_BUILDER_RESUME_QUEUE = liveaction.get_status_management_queue(
+    'st2.executionbuilder.status',
+    routing_key=publishers.ANY_RK)
