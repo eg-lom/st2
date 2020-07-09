@@ -164,7 +164,16 @@ class LoggingStream(object):
 
 def _audit(logger, msg, *args, **kwargs):
     if logger.isEnabledFor(logging.AUDIT):
-        logger._log(logging.AUDIT, msg, args, **kwargs)
+        try:
+            logger._log(logging.AUDIT, msg, args, **kwargs)
+        except RuntimeError as e:
+            if 'cannot release' in str(e):
+                # Release failed which most likely indicates that acquire failed
+                # and lock was never acquired
+                # No logger yet therefore write to stdout
+                sys.stdout.write('WARN: %s' % (str(e)))
+            else:
+                raise e
 
 
 logging.Logger.audit = _audit
