@@ -132,22 +132,26 @@ def create_request(liveaction, action_db=None, runnertype_db=None):
     liveaction = LiveAction.add_or_update(liveaction, publish=False)
     # Get trace_db if it exists. This could throw. If it throws, we have to cleanup
     # liveaction object so we don't see things in requested mode.
+
     trace_db = None
-    try:
-        _, trace_db = trace_service.get_trace_db_by_live_action(liveaction)
-    except db_exc.StackStormDBObjectNotFoundError as e:
-        _cleanup_liveaction(liveaction)
-        raise trace_exc.TraceNotFoundException(six.text_type(e))
+
+    # Commenting out this code as this was making workflow execution slow
+
+    # try:
+    #     _, trace_db = trace_service.get_trace_db_by_live_action(liveaction)
+    # except db_exc.StackStormDBObjectNotFoundError as e:
+    #     _cleanup_liveaction(liveaction)
+    #     raise trace_exc.TraceNotFoundException(six.text_type(e))
 
     execution = executions.create_execution_object(liveaction=liveaction, action_db=action_db,
                                                    runnertype_db=runnertype_db, publish=False)
 
-    if trace_db:
-        trace_service.add_or_update_given_trace_db(
-            trace_db=trace_db,
-            action_executions=[
-                trace_service.get_trace_component_for_action_execution(execution, liveaction)
-            ])
+    # if trace_db:
+    #     trace_service.add_or_update_given_trace_db(
+    #         trace_db=trace_db,
+    #         action_executions=[
+    #             trace_service.get_trace_component_for_action_execution(execution, liveaction)
+    #         ])
 
     get_driver().inc_counter('action.executions.%s' % (liveaction.status))
 
